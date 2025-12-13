@@ -6,7 +6,7 @@
 * The procedure explanation
   1. Line 207 push eax to allocate 4 bytes onto stack
   2. Line 208 sidt [esp-02h]
-    * sidt instruction writes 6 bytes (2 bytes length + 4 bytes address)
+    * sidt instruction writes 6 bytes (2 bytes length + 4 bytes address) from IDT
     * Write the length at esp-2, cause we don't care about that
     * The IDT base address will be write at the start 4 bytes of esp (original eax)
   3. Line 209 pop ebx will pop the IDT address just written to ebx
@@ -28,5 +28,19 @@
   11. Line 222 mov [ebx-04h], si loads 5678h into [Base+0]
   12. Line 223 shr esi, 16 shifts 16 right, and esi becomes 0x00001234
   13. Line 224 mov [ebx+02h], si loads 1234h into [Base+6]
-  14. Line 225 pop esi to recover the original new function address
-  
+  14. Line 226 pop esi to recover the original new function address
+  15. Line 232 int HookExceptionNumber
+### When to Explode?
+* This procedure is to explode on a specific date
+* Please check the table of CMOS reference about ten clock data registers
+  * You'll know why we need to put 07h into al
+  * You'll konw why we need to use port 70h, 71h on the title "Aceessing the CMOS"
+[CMOS reference](./reference/CMOS-reference.txt)
+* The procedure explanation
+  1. Line 1208 mov al, 07h puts 07h on al
+  2. Line 1209 out 70h, al sends al (07h) to port 70h
+  3. Line 1210 in al, 71h returns date in port 71h
+  4. Line 1212 xor al, 26h
+  5. Line 1217 jnz DisableOnBusy checks condition
+    * if al==26h ? 1 : 0
+    * if today's not 26th, then jnz would jump to DisableOnBusy (Not execute virus)
