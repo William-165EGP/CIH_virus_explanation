@@ -44,3 +44,17 @@
   5. Line 1217 jnz DisableOnBusy checks condition
     * if al==26h ? 1 : 0
     * if today's not 26th, then jnz would jump to DisableOnBusy (Not execute virus)
+### Kill BIOS EEPROM
+* The procedure explanation
+  1. Line 1280-1284 uses a specific memory mapping address to enable program mode on flash rom
+  2. Line 1288 loop $ just a spinloop. Decrements ecx until it becomes zero. The CPU waits for the slowly flash rom finishing the word
+  3. Line 1297 xor ah, ah set ah as zero
+  4. Line 1298 loads zero (ah) into the address of eax (00E00000)
+  5. Line 1300-1301 exchange eax and ecx. The ecx becomes a very large number (memory address), and the spinloop would be long enough for flash rom
+  6. Line 1311-1327 kills the BIOS Main part, similar to the 6 points above
+  * The BIOS memory map is divided into 2 parts: main and extra
+    * The first 64KB is Main BIOS
+    * The second 64KB is Extra BIOS
+    * If CIH only attacks Main BIOS, Boot Block may find the Main BIOS checksum is invalid and prompt user to insert into rescue disk
+    * If CIH only attacks Extra BIOS, the computer may still be able to start but something wrong happeded while reading extra part, eventually entering into DOS
+    * Killing the entire 128KB chip would be better because all of them would be garbage wherever the CPU reading
