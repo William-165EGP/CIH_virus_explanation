@@ -4,7 +4,7 @@
 * This function is to modify the IDT
 * We'll need to get ring 0 priviledge
 * The procedure explanation
-  1. Line 207 push eax to preserve 4 bytes onto stack
+  1. Line 207 push eax to preserve 4 bytes in stack
   2. Line 208 sidt [esp-02h]
     * sidt instruction writes 6 bytes (2 bytes length + 4 bytes address) from IDT
     * Write the length at esp-2, cause we don't care about that
@@ -34,7 +34,7 @@
 * This procedure is to explode on a specific date
 * Please check the table of CMOS reference about ten clock data registers
   * You'll know why we need to put 07h into al
-  * You'll konw why we need to use port 70h, 71h on the title "Aceessing the CMOS"
+  * You'll know why we need to use port 70h, 71h on the title "Aceessing the CMOS"
 [CMOS reference](./reference/CMOS-reference.txt)
 * The procedure explanation
   1. Line 1208 mov al, 07h puts 07h on al
@@ -60,6 +60,8 @@
     * Killing the entire 128KB chip would be better because all of them would be garbage wherever the CPU read
 ### Kill Hard Disk
 * We'll need to construct IOR(Input Output Request) table for Windows 9x disk driver
+* It starts to write the data per block in disk until error occurs
+* I believe the beginning of destory starts from MBR partition table
 * The procedure explanation for the IOR table
   1. Line 1352 mov bh, FirstKillHardDiskNumber puts the desired disk number into bh
   2. Line 1353 push ebx pushes the disk number into stack
@@ -92,3 +94,14 @@
     * I believe it wanna move to the next cylinder
   2. Line 1383 mov byte ptr [esi+4dh], FirstKillHardDiskNumber is to reset the disk number
   3. Line 1385 jmp LoopOfKillHardDisk jumps to the main loop, continuing to destroy
+## The Lesson Brings to US
+1. The instruction sidt has been removed
+  * If the IDT info such as address is told to user, it is dangerous to the OS no matter how strong is the protection
+  * The user can hijack the IDT address and change specific interruption number points to any function address
+  * This will let the code get access to Ring0
+2. The instruction cli has been removed
+  * It is inappropriate to let the user turn off interruption
+  * Leaving aside the computer virus, we assume a sloppy code turn off the interruption
+  * If the sloppy code gets into a infinite loop, the OS cannot take back the control because the timer interruption is ignored
+3. EEPROM protection
+  
