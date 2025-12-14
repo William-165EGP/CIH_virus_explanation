@@ -94,7 +94,8 @@
     * I believe it wanna move to the next cylinder
   2. Line 1383 mov byte ptr [esi+4dh], FirstKillHardDiskNumber is to reset the disk number
   3. Line 1385 jmp LoopOfKillHardDisk jumps to the main loop, continuing to destroy
-## The Lesson Brings to US
+![What Is CHS](./reference/what-is-chs.png)
+## The Lessons Bring to US
 1. The instruction sidt has been removed
   * If the IDT info such as address is told to user, it is dangerous to the OS no matter how strong is the protection
   * The user can hijack the IDT address and change specific interruption number points to any function address
@@ -104,4 +105,14 @@
   * Leaving aside the computer virus, we assume a sloppy code turn off the interruption
   * If the sloppy code gets into a infinite loop, the OS cannot take back the control because the timer interruption is ignored
 3. EEPROM protection
-  
+  * The **Physical** Presence Jumpter
+    * The Vpp (Programming Voltage) and Vcc (Supply Voltage) is only on legacy Intel flash chip
+    * On modern EEPRO, Modern Single Supply is used
+    * Only Vpp (12V~12.5V) is connected then EEPROM can be written
+    * The write operation would be failed if on Vcc (5V)
+  * Dual BIOS
+    * The Main BIOS can be read, written
+    * The Backup BIOS is read-only, stores firmware on factory version 
+4. Set some instruction as priviledge (like int 20h on Windows)
+  * It is ineffctive to use int 20h on WIndows NT
+  * The user program cannot directly construct the IOR and send to driver
