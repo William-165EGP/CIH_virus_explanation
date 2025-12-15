@@ -71,7 +71,7 @@
   6. Line 1358-1360 pushes ecx(0) into stack to fill other column of IOR
   7. Line 1361 push 40000501h pushes prompt code and other parameters into stack. The 05h is WRITE_TRACK
   8. Line 1362-1364 increments ecx as 1 and doubly pushes that into stack. The 1 represents Sector Count we wanna write
-* The procedure explanation for the preparation of execution
+* The procedure explanation for the preparation and execution
   1. Line 1366 mov esi, esp points esi to the top of stack
   2. Line 1367 sub esp, 0ach just preserve more space
   3. Line 1370 int 20h calls interrupt 20
@@ -80,7 +80,7 @@
   4. Line 1371 dd 00100004h is a service id
     * 0010h is IOS (I/O Supervisor)
     * 0004h is IOS_SendCommand
-* The procedure explanation for the loop of destroy and error checking
+* The procedure explanation for the error checking
   1. Line 1373 cmp word ptr [esi+06h], 0017h checks the column of status in IOR
     * 0017h represents "Invalid Command" or "Sector Not Found"
   2. Line 1374 je KillNextDataSection jumps to KillNextDataSection if error occurs
@@ -88,7 +88,7 @@
   3. Line 1377 inc byte ptr [esi+4dh] increments the data at IOR structure+4Dh
     * This represents move to the next position (either Head or Sector) to destroy
   4. Line 1379 jmp LoopOfKillHardDisk jump to LoopOfKillHardDisk and continue to do int 20h write operation
-* The procedure explanation for the IOR table
+* The procedure explanation for moving to the next cylinder
   1. Line 1382 add dword ptr [esi+10h], ebx adds ebx on the data at IOR structure+10h
     * It's a large value to skip a lot of area
     * I believe it wanna move to the next cylinder
@@ -113,6 +113,6 @@
   * Dual BIOS
     * The Main BIOS can be read, written
     * The Backup BIOS is read-only, stores firmware on factory version 
-4. Set some instruction as priviledge (like int 20h on Windows)
+4. Set some instructions as priviledge (like int 20h on Windows)
   * It is ineffctive to use int 20h on WIndows NT
   * The user program cannot directly construct the IOR and send to driver
