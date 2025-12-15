@@ -113,6 +113,6 @@
   * Dual BIOS
     * The Main BIOS can be read, written
     * The Backup BIOS is read-only, stores firmware on factory version 
-4. Set some instructions as priviledge (like int 20h on Windows)
+4. Set some interruption as priviledge (like int 20h on Windows)
   * It is ineffctive to use int 20h on WIndows NT
   * The user program cannot directly construct the IOR and send to driver
